@@ -83,16 +83,22 @@ contract CakeToken is BEP20 {
         sellFee = _sellFee;
         feeDenominator = _feeDenominator;
 
-        router = IDEXRouter(_routerAddress);
-        IDEXFactory factory = IDEXFactory(router.factory());
-        for (uint256 i = 0; i < _tokenAddresses.length; i++) {
-            address pair = factory.createPair(
-                _tokenAddresses[i],
-                address(this)
-            );
-            _allowances[address(this)][address(router)] = type(uint256).max;
-            existPairs[pair] = true;
+        if (_routerAddress == address(0)) {
+            for (uint256 i = 0; i < _tokenAddresses.length; i++) {
+                existPairs[_tokenAddresses[i]] = true;
+            }
+        } else {
+            router = IDEXRouter(_routerAddress);
+            IDEXFactory factory = IDEXFactory(router.factory());
+            for (uint256 i = 0; i < _tokenAddresses.length; i++) {
+                address pair = factory.createPair(
+                    _tokenAddresses[i],
+                    address(this)
+                );
+                existPairs[pair] = true;
+            }
         }
+        _allowances[address(this)][address(router)] = type(uint256).max;
     }
 
     /**
