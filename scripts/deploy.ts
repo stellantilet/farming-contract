@@ -4,23 +4,35 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import hardhat, { ethers } from "hardhat";
-import args from '../arguments';
+import args from "../arguments";
 
 async function main() {
-  const ERC721DogyRace = await ethers.getContractFactory("ERC721DogyRace")
-  const erc721DogyRace = await ERC721DogyRace.deploy(args[0], args[1], args[2])
+  const CakeToken = await ethers.getContractFactory("CakeToken");
+  const cakeToken = await CakeToken.deploy(
+    args[0],
+    args[1],
+    args[2],
+    args[3],
+    args[4]
+  );
 
-  await erc721DogyRace.deployed();
+  await cakeToken.deployed();
   const networkName = hardhat.network.name;
   switch (networkName) {
     case "rinkeby":
-      console.log(`ERC721DogyRace deployed to: https://rinkeby.etherscan.io/address/${erc721DogyRace.address}#code`);
+      console.log(
+        `ERC721DogyRace deployed to: https://rinkeby.etherscan.io/address/${cakeToken.address}#code`
+      );
       break;
     case "bscTestnet":
-      console.log(`ERC721DogyRace deployed to: https://testnet.bscscan.com/address/${erc721DogyRace.address}#code`);
+      console.log(
+        `ERC721DogyRace deployed to: https://testnet.bscscan.com/address/${cakeToken.address}#code`
+      );
       break;
     case "bsc":
-      console.log(`ERC721DogyRace deployed to: https://bscscan.com/address/${erc721DogyRace.address}#code`);
+      console.log(
+        `ERC721DogyRace deployed to: https://bscscan.com/address/${cakeToken.address}#code`
+      );
       break;
   }
 }

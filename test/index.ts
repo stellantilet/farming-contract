@@ -16,7 +16,13 @@ describe("CakeToken", () => {
   it("deploy", async () => {
     accounts = await ethers.getSigners();
     CakeToken = await ethers.getContractFactory("CakeToken");
-    cakeToken = await CakeToken.deploy(10, 5, 1000);
+    cakeToken = await CakeToken.deploy(
+      10,
+      5,
+      1000,
+      "0x0000000000000000000000000000000000000000",
+      []
+    );
     await cakeToken.deployed();
   });
 
@@ -41,12 +47,11 @@ describe("CakeToken", () => {
   it("transfer", async () => {
     const [owner, addr1, addr2] = accounts;
     let tx: ContractTransaction = await cakeToken
-      .connect(addr1).transfer(addr2.address, 1000);
-    expect((await cakeToken.balanceOf(addr1.address)).toString()).to.equal(
-      "0"
-    );
+      .connect(addr1)
+      .transfer(addr2.address, 1000);
+    expect((await cakeToken.balanceOf(addr1.address)).toString()).to.equal("0");
     expect((await cakeToken.balanceOf(addr2.address)).toString()).to.equal(
-      "500"
+      "1000"
     );
     let receipt: ContractReceipt = await tx.wait();
     const events = receipt.events?.filter((x) => {
