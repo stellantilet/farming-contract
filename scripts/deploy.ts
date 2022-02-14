@@ -21,17 +21,17 @@ async function main() {
   switch (networkName) {
     case "rinkeby":
       console.log(
-        `ERC721DogyRace deployed to: https://rinkeby.etherscan.io/address/${cakeToken.address}#code`
+        `Token deployed to: https://rinkeby.etherscan.io/address/${cakeToken.address}#code`
       );
       break;
     case "bscTestnet":
       console.log(
-        `ERC721DogyRace deployed to: https://testnet.bscscan.com/address/${cakeToken.address}#code`
+        `Token deployed to: https://testnet.bscscan.com/address/${cakeToken.address}#code`
       );
       break;
     case "bsc":
       console.log(
-        `ERC721DogyRace deployed to: https://bscscan.com/address/${cakeToken.address}#code`
+        `Token deployed to: https://bscscan.com/address/${cakeToken.address}#code`
       );
       break;
   }
