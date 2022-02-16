@@ -20,6 +20,7 @@ module.exports = {
       "error",
       { ignores: ["modules"] },
     ],
-    semi: ["error", "never"],
+    semi: ["error", "always"],
+    "comma-dangle": ["error", "always"],
   },
 };

@@ -53,7 +53,9 @@ contract CakeToken is BEP20 {
 
     uint256 internal sellFee;
 
-    uint256 internal feeDenominator;
+    uint256 internal feeFraction;
+
+    bool internal feeFlag;
 
     IDEXRouter internal router;
     mapping(address => bool) internal existPairs;
@@ -75,13 +77,15 @@ contract CakeToken is BEP20 {
     constructor(
         uint256 _buyFee,
         uint256 _sellFee,
-        uint256 _feeDenominator,
+        uint256 _feeFraction,
+        bool _feeFlag,
         address _routerAddress,
         address[] memory _tokenAddresses
     ) public BEP20("SolutionBear Token", "SUL") {
         buyFee = _buyFee;
         sellFee = _sellFee;
-        feeDenominator = _feeDenominator;
+        feeFraction = _feeFraction;
+        feeFlag = _feeFlag;
 
         if (_routerAddress == address(0)) {
             for (uint256 i = 0; i < _tokenAddresses.length; i++) {
@@ -310,13 +314,13 @@ contract CakeToken is BEP20 {
         address recipient,
         uint256 amount
     ) internal returns (uint256) {
-        uint256 feeAmount;
-        if (existPairs[sender]) {
-            feeAmount = amount.mul(buyFee).div(feeDenominator);
-        } else if (existPairs[recipient]) {
-            feeAmount = amount.mul(sellFee).div(feeDenominator);
-        } else {
-            feeAmount = 0;
+        uint256 feeAmount = 0;
+        if (feeFlag) {
+            if (existPairs[sender]) {
+                feeAmount = amount.mul(buyFee).div(feeFraction);
+            } else if (existPairs[recipient]) {
+                feeAmount = amount.mul(sellFee).div(feeFraction);
+            }
         }
         _balances[address(this)] = _balances[address(this)].add(feeAmount);
         return amount.sub(feeAmount);
@@ -342,14 +346,18 @@ contract CakeToken is BEP20 {
     function setFeeParameters(
         uint256 _buyFee,
         uint256 _sellFee,
-        uint256 _feeDenominator
+        uint256 _feeFraction
     ) external onlyOwner {
-        require(_feeDenominator >= 100, "SUL: fee denominator is not correct");
+        require(_feeFraction >= 100, "SUL: fee denominator is not correct");
         require(_buyFee > 0, "SUL: buy fee is not correct");
         require(_sellFee > 0, "SUL: sell fee is not correct");
 
         buyFee = _buyFee;
         sellFee = _sellFee;
-        feeDenominator = _feeDenominator;
+        feeFraction = _feeFraction;
+    }
+
+    function setFeeFlag(bool _feeFlag) external onlyOwner {
+        feeFlag = _feeFlag;
     }
 }
