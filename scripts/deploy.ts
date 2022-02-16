@@ -87,6 +87,19 @@ async function main() {
       if (error) console.log(error)
     },
   )
+
+  await fs.appendFile(
+    `./deployed.log`,
+    `
+###### ${networkName} (${new Date()}) ######
+Token: ${scanURI[networkName]}/address/${cakeToken.address}#code
+SyrupBar: ${scanURI[networkName]}/address/${syrupBar.address}#code
+MasterChef: ${scanURI[networkName]}/address/${masterChef.address}#code
+    `,
+    (error) => {
+      if (error) console.log(error)
+    },
+  )
 }
 
 // We recommend this pattern to be able to use async/await everywhere
