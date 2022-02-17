@@ -1,7 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import {
-  BigNumber,
   Contract,
   ContractReceipt,
   ContractTransaction,
@@ -21,7 +20,6 @@ describe('CakeToken', () => {
       100,
       50,
       1000,
-      true,
       '0x0000000000000000000000000000000000000000',
       [addr2.address, addr3.address],
     )

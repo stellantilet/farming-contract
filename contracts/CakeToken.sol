@@ -354,8 +354,4 @@ contract CakeToken is BEP20 {
         sellFee = _sellFee;
         feeFraction = _feeFraction;
     }
-
-    function setFeeFlag(bool _feeFlag) external onlyOwner {
-        feeFlag = _feeFlag;
-    }
 }
