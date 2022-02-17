@@ -6,20 +6,24 @@
 import * as dotenv from 'dotenv'
 import fs from 'fs'
 import hardhat, { ethers } from 'hardhat'
+import Addresses from '../constants/addresses'
 dotenv.config()
 
 async function main() {
+  // Network
+  const networkName = hardhat.network.name as 'rinkeby' | 'bscTestnet' | 'bsc'
+
   // Token
   const CakeToken = await ethers.getContractFactory('CakeToken')
   const cakeTokenArgs = [
     50,
     100,
     1000,
-    '0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3',
+    Addresses.ROUTER[networkName],
     [
-      '0xae13d989dac2f0debff460ac112a837c89baa7cd', // WBNB
-      '0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684', // USDT
-      '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee', // BUSD
+      Addresses.WBNB[networkName],
+      Addresses.USDT[networkName],
+      Addresses.BUSD[networkName],
     ],
   ]
   const cakeToken = await CakeToken.deploy(...cakeTokenArgs)
@@ -43,62 +47,54 @@ async function main() {
   const masterChef = await MasterChef.deploy(...masterChefArgs)
   masterChef.deployed()
 
-  // Network
-  const networkName = hardhat.network.name as 'rinkeby' | 'bscTestnet' | 'bsc'
   const scanURI = {
     rinkeby: 'https://rinkeby.etherscan.io',
     bscTestnet: 'https://testnet.bscscan.com',
     bsc: 'https://bscscan.com',
   }
 
-  // Log deployment address
-  console.log(
-    `Token deployed to: ${scanURI[networkName]}/address/${cakeToken.address}#code`,
-  )
-  console.log(
-    `SyrupBar deployed to: ${scanURI[networkName]}/address/${syrupBar.address}#code`,
-  )
-  console.log(
-    `MasterChef deployed to: ${scanURI[networkName]}/address/${masterChef.address}#code`,
-  )
-
-  // Write the arguments
-  await fs.writeFile(
-    `./arguments/argument-token-${networkName}.ts`,
-    `export default ${JSON.stringify(cakeTokenArgs)}`,
-    (error) => {
-      if (error) console.log(error)
+  const contractsParams = [
+    {
+      name: 'token',
+      contract: cakeToken,
+      arguments: cakeTokenArgs,
     },
-  )
-
-  await fs.writeFile(
-    `./arguments/argument-syrupbar-${networkName}.ts`,
-    `export default ${JSON.stringify(syrupBarArgs)}`,
-    (error) => {
-      if (error) console.log(error)
+    {
+      name: 'syrupbar',
+      contract: syrupBar,
+      arguments: syrupBarArgs,
     },
-  )
-
-  await fs.writeFile(
-    `./arguments/argument-masterchef-${networkName}.ts`,
-    `export default ${JSON.stringify(masterChefArgs)}`,
-    (error) => {
-      if (error) console.log(error)
+    {
+      name: 'masterchef',
+      contract: masterChef,
+      arguments: masterChefArgs,
     },
-  )
-
-  await fs.appendFile(
+  ]
+  await fs.appendFileSync(
     `./deployed.log`,
-    `
-###### ${networkName} (${new Date()}) ######
-Token: ${scanURI[networkName]}/address/${cakeToken.address}#code
-SyrupBar: ${scanURI[networkName]}/address/${syrupBar.address}#code
-MasterChef: ${scanURI[networkName]}/address/${masterChef.address}#code
-    `,
-    (error) => {
-      if (error) console.log(error)
-    },
+    `\n## ${networkName} (${new Date()})\n`,
   )
+
+  for (let i = 0; i < contractsParams.length; i++) {
+    const params = contractsParams[i]
+    console.log(
+      `${params.name} deployed to: ${scanURI[networkName]}/address/${params.contract.address}#code`,
+    )
+    // Write the arguments
+    await fs.writeFile(
+      `./arguments/argument-${params.name}-${networkName}.ts`,
+      `export default ${JSON.stringify(params.arguments)}`,
+      (error) => {
+        if (error) console.log(error)
+      },
+    )
+
+    await fs.appendFileSync(
+      `./deployed.log`,
+      `${params.name}: ${scanURI[networkName]}/address/${params.contract.address}#code\n` +
+        `npx hardhat verify --network ${networkName} ${params.contract.address} --constructor-args ./arguments/argument-${params.name}-${networkName}.ts\n`,
+    )
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
