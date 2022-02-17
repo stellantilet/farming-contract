@@ -55,8 +55,6 @@ contract CakeToken is BEP20 {
 
     uint256 internal feeFraction;
 
-    bool internal feeFlag;
-
     IDEXRouter internal router;
     mapping(address => bool) internal existPairs;
 
@@ -78,14 +76,12 @@ contract CakeToken is BEP20 {
         uint256 _buyFee,
         uint256 _sellFee,
         uint256 _feeFraction,
-        bool _feeFlag,
         address _routerAddress,
         address[] memory _tokenAddresses
     ) public BEP20("SolutionBear Token", "SUL") {
         buyFee = _buyFee;
         sellFee = _sellFee;
         feeFraction = _feeFraction;
-        feeFlag = _feeFlag;
 
         if (_routerAddress == address(0)) {
             for (uint256 i = 0; i < _tokenAddresses.length; i++) {
@@ -315,10 +311,12 @@ contract CakeToken is BEP20 {
         uint256 amount
     ) internal returns (uint256) {
         uint256 feeAmount = 0;
-        if (feeFlag) {
-            if (existPairs[sender]) {
+        if (existPairs[sender]) {
+            if (recipient != owner()) {
                 feeAmount = amount.mul(buyFee).div(feeFraction);
-            } else if (existPairs[recipient]) {
+            }
+        } else if (existPairs[recipient]) {
+            if (sender != owner()) {
                 feeAmount = amount.mul(sellFee).div(feeFraction);
             }
         }
