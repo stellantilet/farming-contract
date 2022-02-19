@@ -14,8 +14,8 @@ async function main() {
   const networkName = hardhat.network.name as 'rinkeby' | 'bscTestnet' | 'bsc'
 
   // Token
-  const CakeToken = await ethers.getContractFactory('CakeToken')
-  const cakeTokenArgs = [
+  const SolutionBear = await ethers.getContractFactory('SolutionBear')
+  const sulTokenArgs = [
     50,
     100,
     1000,
@@ -26,7 +26,7 @@ async function main() {
       Addresses.BUSD[networkName],
     ],
   ]
-  const cakeToken = await CakeToken.deploy(...cakeTokenArgs)
+  const cakeToken = await SolutionBear.deploy(...sulTokenArgs)
   await cakeToken.deployed()
 
   // SyrupBar
@@ -57,7 +57,7 @@ async function main() {
     {
       name: 'token',
       contract: cakeToken,
-      arguments: cakeTokenArgs,
+      arguments: sulTokenArgs,
     },
     {
       name: 'syrupbar',

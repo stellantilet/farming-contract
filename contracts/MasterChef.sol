@@ -5,7 +5,7 @@ import "./swap/token/BEP20/IBEP20.sol";
 import "./swap/token/BEP20/SafeBEP20.sol";
 import "./swap/access/Ownable.sol";
 
-import "./CakeToken.sol";
+import "./SolutionBear.sol";
 import "./SyrupBar.sol";
 
 // import "@nomiclabs/buidler/console.sol";
@@ -60,7 +60,7 @@ contract MasterChef is Ownable {
     }
 
     // The CAKE TOKEN!
-    CakeToken public cake;
+    SolutionBear public cake;
     // The SYRUP TOKEN!
     SyrupBar public syrup;
     // Dev address.
@@ -90,7 +90,7 @@ contract MasterChef is Ownable {
     );
 
     constructor(
-        CakeToken _cake,
+        SolutionBear _cake,
         SyrupBar _syrup,
         address _devaddr,
         uint256 _cakePerBlock,
